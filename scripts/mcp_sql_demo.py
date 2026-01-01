@@ -17,7 +17,7 @@ from mcp_client import McpStdioClient
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="SQL Subset demo")
     p.add_argument("--server", choices=["docker", "jar"], default="docker")
-    p.add_argument("--image", default="antlr4-mcp-server:latest")
+    p.add_argument("--image", default="sshailabh/antlr4-mcp-server:latest")
     p.add_argument("--out-dir", default="")
     p.add_argument("--target", default="python")
     p.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
@@ -62,7 +62,7 @@ def main() -> int:
         print("\n[2/3] Parsing SQL query...")
         parsed = client.call_tool(
             "parse_sample",
-            {"grammar_text": grammar_text, "sample_input": sample_input, "start_rule": "statement", "show_tokens": False},
+            {"grammar_text": grammar_text, "sample_input": sample_input, "start_rule": "sql_stmt_list", "show_tokens": False},
         )
         if parsed.get("success"):
             print(f"[ok] SQL parsed successfully")

@@ -1,4 +1,5 @@
-hello World
-hi Alice
-hey Bob Smith
-hello Jane Doe
+hello world
+hi there
+hey everyone
+hello John Doe
+hi Alice Bob Charlie

@@ -1,46 +1,62 @@
+/*
+ * Route DSL Grammar
+ * 
+ * A custom DSL for defining HTTP routes, inspired by web frameworks
+ * like Express.js, Flask, and Ruby on Rails.
+ * 
+ * Example:
+ *   route GET /users -> Users.list;
+ *   route POST /users -> Users.create;
+ *   route GET /users/{id} -> Users.show;
+ * 
+ * This demonstrates:
+ * - Custom language design
+ * - Path parameters with {param} syntax
+ * - Handler references as Controller.method
+ */
+
 grammar RouteDsl;
 
 // Entry point
 file
-  : routeDecl* EOF
-  ;
+    : routeDecl* EOF
+    ;
 
 routeDecl
-  : ROUTE method path ARROW handler SEMI
-  ;
+    : 'route' method path '->' handler ';'
+    ;
 
 method
-  : GET
-  | POST
-  | PUT
-  | DELETE
-  ;
+    : 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'PATCH'
+    | 'HEAD'
+    | 'OPTIONS'
+    ;
 
 path
-  : PATH
-  ;
+    : PATH
+    ;
 
 handler
-  : IDENT (DOT IDENT)*
-  ;
+    : IDENTIFIER ('.' IDENTIFIER)*
+    ;
 
-// ===== Lexer =====
+// Lexer rules
+PATH 
+    : '/' ~[ \t\r\n;]+ 
+    ;
 
-ROUTE  : 'route' ;
-GET    : 'GET' ;
-POST   : 'POST' ;
-PUT    : 'PUT' ;
-DELETE : 'DELETE' ;
+IDENTIFIER 
+    : [a-zA-Z_][a-zA-Z0-9_]* 
+    ;
 
-ARROW : '->' ;
-SEMI  : ';' ;
-DOT   : '.' ;
+WS 
+    : [ \t\r\n]+ -> skip 
+    ;
 
-// Path tokens like: /users, /users/{id}, /v1/users/{id}/posts
-PATH : '/' ~[ \t\r\n;]+ ;
-
-IDENT : [a-zA-Z_] [a-zA-Z0-9_]* ;
-
-WS : [ \t\r\n]+ -> skip ;
-
-
+COMMENT 
+    : '#' ~[\r\n]* -> skip 
+    ;

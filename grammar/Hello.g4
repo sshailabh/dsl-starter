@@ -1,17 +1,33 @@
-// Simple Hello World grammar - perfect for learning ANTLR4 basics
+/*
+ * Hello World Grammar
+ * 
+ * This is the canonical ANTLR4 learning example from 
+ * "The Definitive ANTLR 4 Reference" Book
+ * 
+ * Perfect for understanding the basics:
+ * - Parser rules (lowercase): define structure
+ * - Lexer rules (UPPERCASE): define tokens
+ * - The -> skip action: discard matched text
+ */
+
 grammar Hello;
 
 // Parser rules (lowercase)
 greeting
-    : 'hello' name
-    | 'hi' name
-    | 'hey' name
+    : 'hello' name      # HelloGreeting
+    | 'hi' name         # HiGreeting
+    | 'hey' name        # HeyGreeting
     ;
 
 name
-    : NAME+
+    : WORD+
     ;
 
 // Lexer rules (UPPERCASE)
-NAME : [a-zA-Z]+ ;
-WS   : [ \t\r\n]+ -> skip ;
+WORD 
+    : [a-zA-Z]+ 
+    ;
+
+WS   
+    : [ \t\r\n]+ -> skip 
+    ;

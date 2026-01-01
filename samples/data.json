@@ -1,10 +1,19 @@
 {
-  "name": "Alice",
+  "name": "Alice Johnson",
   "age": 30,
-  "tags": ["developer", "python"],
+  "email": "alice@example.com",
   "active": true,
-  "metadata": {
-    "created": "2024-01-01",
-    "version": 1.0
-  }
+  "roles": ["admin", "developer"],
+  "profile": {
+    "bio": "Software engineer with 10 years of experience",
+    "location": "San Francisco",
+    "social": {
+      "github": "alicej",
+      "twitter": null
+    }
+  },
+  "projects": [
+    {"name": "Project Alpha", "status": "active"},
+    {"name": "Project Beta", "status": "completed"}
+  ]
 }

@@ -1,0 +1,77 @@
+api UserService {
+  base_url: "/api/v1"
+  
+  endpoint GET /users {
+    query: page:int, limit:int?
+    response: User[]
+  }
+  
+  endpoint GET /users/{id:uuid} {
+    response: User
+    errors: 404 "User not found"
+  }
+  
+  endpoint POST /users {
+    body: CreateUserRequest
+    response: User
+    errors: 400 "Invalid request", 409 "User exists"
+  }
+  
+  endpoint PUT /users/{id:uuid} {
+    body: UpdateUserRequest
+    response: User
+    errors: 400 "Invalid request", 404 "User not found"
+  }
+  
+  endpoint DELETE /users/{id:uuid} {
+    response: DeleteResponse
+    errors: 404 "User not found"
+  }
+  
+  type User {
+    id: uuid
+    name: string
+    email: string
+    created_at: timestamp
+    updated_at: timestamp
+  }
+  
+  type CreateUserRequest {
+    name: string
+    email: string
+  }
+  
+  type UpdateUserRequest {
+    name: string?
+    email: string?
+  }
+  
+  type DeleteResponse {
+    success: bool
+    deleted_at: timestamp
+  }
+}
+
+api ProductService {
+  base_url: "/api/v1"
+  
+  endpoint GET /products {
+    query: category:string?, min_price:float?, max_price:float?
+    response: Product[]
+  }
+  
+  endpoint GET /products/{id:uuid} {
+    response: Product
+    errors: 404 "Product not found"
+  }
+  
+  type Product {
+    id: uuid
+    name: string
+    description: string
+    price: float
+    category: string
+    in_stock: bool
+  }
+}
+

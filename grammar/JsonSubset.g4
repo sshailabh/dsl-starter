@@ -1,20 +1,19 @@
+/*
+ * JSON Grammar
+ * 
+ * Taken from "The Definitive ANTLR 4 Reference" Book
+ * Derived from https://json.org
+ * 
+ * See: https://github.com/antlr/grammars-v4/tree/master/json
+ */
+
 grammar JsonSubset;
 
 json
-    : value
+    : value EOF
     ;
 
-value
-    : object
-    | array
-    | STRING
-    | NUMBER
-    | 'true'
-    | 'false'
-    | 'null'
-    ;
-
-object
+obj
     : '{' pair (',' pair)* '}'
     | '{' '}'
     ;
@@ -23,17 +22,39 @@ pair
     : STRING ':' value
     ;
 
-array
+arr
     : '[' value (',' value)* ']'
     | '[' ']'
     ;
 
+value
+    : STRING
+    | NUMBER
+    | obj
+    | arr
+    | 'true'
+    | 'false'
+    | 'null'
+    ;
+
 STRING
-    : '"' ( ESC | ~["\\] )* '"'
+    : '"' (ESC | SAFECODEPOINT)* '"'
     ;
 
 fragment ESC
-    : '\\' ["\\/bfnrt]
+    : '\\' (["\\/bfnrt] | UNICODE)
+    ;
+
+fragment UNICODE
+    : 'u' HEX HEX HEX HEX
+    ;
+
+fragment HEX
+    : [0-9a-fA-F]
+    ;
+
+fragment SAFECODEPOINT
+    : ~ ["\\\u0000-\u001F]
     ;
 
 NUMBER
@@ -46,9 +67,9 @@ fragment INT
     ;
 
 fragment EXP
-    : [Ee] [+\-]? INT
+    : [Ee] [+-]? [0-9]+
     ;
 
 WS
-    : [ \t\r\n]+ -> skip
+    : [ \t\n\r]+ -> skip
     ;
