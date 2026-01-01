@@ -1,0 +1,19 @@
+{
+  "name": "Alice Johnson",
+  "age": 30,
+  "email": "alice@example.com",
+  "active": true,
+  "roles": ["admin", "developer"],
+  "profile": {
+    "bio": "Software engineer with 10 years of experience",
+    "location": "San Francisco",
+    "social": {
+      "github": "alicej",
+      "twitter": null
+    }
+  },
+  "projects": [
+    {"name": "Project Alpha", "status": "active"},
+    {"name": "Project Beta", "status": "completed"}
+  ]
+}
