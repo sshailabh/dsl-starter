@@ -1,320 +1,222 @@
 # DSL Starter Kit
 
-**Build domain-specific languages in hours, not weeks.** This is a hands-on starter project that demonstrates how AI assistants (Claude, Cursor) can accelerate ANTLR4 grammar development using the [ANTLR4 MCP Server](../antlr4-mcp-server/).
-
-## The Problem
-
-You're an engineer who needs to:
-- Parse configuration files in a custom format
-- Build a query language for your internal tools
-- Create a routing DSL for your web framework
-- Validate domain-specific input before it hits your backend
-
-The traditional path: spend days learning ANTLR4 quirks, debugging cryptic error messages, manually testing edge cases, and generating parser code by hand. Most engineers give up and use regex soup or hand-rolled parsers.
-
-## The Solution
-
-The ANTLR4 MCP Server gives your AI assistant the ability to:
-
-| Capability | What It Does |
-|------------|--------------|
-| **Validate grammars** | Catch syntax errors before you waste time |
-| **Parse inputs** | See the parse tree without generating code |
-| **Detect ambiguities** | Find subtle parsing conflicts automatically |
-| **Generate parsers** | Output working code for Python, Java, TypeScript, Go, and 6 more languages |
-| **Analyze structure** | Understand rule dependencies and recursion patterns |
-
-**Result:** You describe what you want to parse in natural language, Claude writes the grammar, validates it, tests it with your samples, and generates working parser code—all in one conversation.
+Build parsers for your domain-specific languages without the pain.
 
 ---
 
-## Quick Start (5 minutes)
+## What This Solves
+
+You have a custom format you need to parse:
+
+```
+route GET /users/{id} -> UserController.show;
+```
+
+```sql
+SELECT name FROM users WHERE age > 25
+```
+
+```ini
+[database]
+host = localhost
+port = 5432
+```
+
+You don't want to write regex spaghetti. You don't want to spend weeks learning parser theory.
+
+**This kit lets you describe your language in plain English, and an AI generates a working parser.**
+
+---
+
+## How It Works
+
+1. You describe your language to Claude (or Cursor)
+2. The AI writes and validates the grammar
+3. You test with sample inputs
+4. The AI generates parser code in your language (Python, Java, TypeScript, etc.)
+
+The magic: an MCP server gives the AI real parsing tools, so it validates instead of guessing.
+
+---
+
+## Setup
 
 ### 1. Pull the Docker Image
 
 ```bash
-docker pull sshailabh/antlr4-mcp-server:latest
+docker pull sshailabh1/antlr4-mcp-server:latest
 ```
 
 ### 2. Configure Your AI Client
 
-**For Claude Desktop** — Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+<details>
+<summary><b>Claude Desktop</b></summary>
+
+Add to your config file:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Linux**: `~/.config/claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "antlr4": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "sshailabh/antlr4-mcp-server:latest"]
+      "args": ["run", "-i", "--rm", "sshailabh1/antlr4-mcp-server:latest"]
     }
   }
 }
 ```
 
-**For Cursor IDE** — Copy `configs/cursor-mcp.json` to `.cursor/mcp.json` in your project.
+Restart Claude Desktop after saving.
 
-### 3. Start Building
+</details>
+
+<details>
+<summary><b>Cursor IDE</b></summary>
+
+Add to `.cursor/mcp.json` in your project:
+
+```json
+{
+  "mcpServers": {
+    "antlr4": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "sshailabh1/antlr4-mcp-server:latest"]
+    }
+  }
+}
+```
+
+Restart Cursor after saving.
+
+</details>
+
+<details>
+<summary><b>VS Code + Continue</b></summary>
+
+Add to your Continue configuration:
+
+```json
+{
+  "mcpServers": [
+    {
+      "name": "antlr4",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "sshailabh1/antlr4-mcp-server:latest"]
+    }
+  ]
+}
+```
+
+</details>
+
+### 3. Verify Setup
+
+Ask your AI assistant:
+
+> "List all available ANTLR4 tools"
+
+You should see 9 tools listed.
+
+---
+
+## Try It
 
 Ask Claude:
-> "I need a grammar to parse HTTP route definitions like `GET /users/{id} -> UserController.show`. Validate it and show me the parse tree."
+
+> "I need to parse config files like this:
+> ```
+> [server]
+> port = 8080
+> ```
+> Write a grammar, validate it, and parse my example."
+
+Claude will:
+- Write the grammar
+- Validate it (catching real errors)
+- Show you the parse tree
+- Generate a parser in your language
 
 ---
 
-## What's Included
+## Example Grammars Included
 
-### 6 Production-Ready Grammar Examples
+| File | What It Parses |
+|------|----------------|
+| `Hello.g4` | Simple greetings (learning example) |
+| `Calculator.g4` | Math expressions with precedence |
+| `RouteDsl.g4` | HTTP route definitions |
+| `ConfigDsl.g4` | INI-style config files |
+| `JsonSubset.g4` | JSON documents |
+| `SqlSubset.g4` | Basic SQL queries |
 
-| Grammar | Purpose | Complexity |
-|---------|---------|------------|
-| `Hello.g4` | Learning the basics | Beginner |
-| `Calculator.g4` | Arithmetic with operator precedence | Beginner |
-| `RouteDsl.g4` | HTTP routing configuration | Intermediate |
-| `ConfigDsl.g4` | INI-style configuration files | Intermediate |
-| `JsonSubset.g4` | Complete JSON parsing | Intermediate |
-| `SqlSubset.g4` | SELECT/INSERT/UPDATE/DELETE | Advanced |
+Each has a matching sample file in `samples/`.
 
-### Automation Scripts
+---
 
-Python scripts that demonstrate the full MCP workflow:
+## Generate a Parser
+
+Once your grammar works:
+
+> "Generate a Python parser with visitor support."
+
+Install the runtime and use it:
 
 ```bash
-# Validate, parse, and generate a Python parser for the Route DSL
-python3 scripts/mcp_route_dsl_demo.py --server docker
+pip install antlr4-python3-runtime
+```
 
-# Run all demos
-python3 scripts/mcp_all_tools_demo.py --server docker
+```python
+from antlr4 import CommonTokenStream, InputStream
+from RouteDslLexer import RouteDslLexer
+from RouteDslParser import RouteDslParser
+
+lexer = RouteDslLexer(InputStream(text))
+parser = RouteDslParser(CommonTokenStream(lexer))
+tree = parser.file_()
 ```
 
 ---
 
-## Real-World Examples
+## Supported Languages
 
-### 1. HTTP Route Configuration
-
-**Grammar:** `grammar/RouteDsl.g4`
-
-```dsl
-route GET /users -> Users.list;
-route POST /users -> Users.create;
-route GET /users/{id} -> Users.get;
-route DELETE /users/{id} -> Users.delete;
-```
-
-**Generated parse tree:**
-
-```
-(file
-  (routeDecl route GET /users -> Users.list ;)
-  (routeDecl route POST /users -> Users.create ;)
-  ...
-)
-```
-
-### 2. Calculator with Proper Precedence
-
-**Grammar:** `grammar/Calculator.g4`
-
-```
-2 + 3 * 4      → 14 (not 20!)
-(10 + 5) * 2   → 30
-```
-
-ANTLR4 handles operator precedence through rule ordering—multiplication before addition.
-
-### 3. Configuration Files
-
-**Grammar:** `grammar/ConfigDsl.g4`
-
-```ini
-[server]
-host = localhost
-port = 8080
-
-[database]
-url = postgresql://localhost/mydb
-pool_size = 10
-```
-
-### 4. SQL Subset
-
-**Grammar:** `grammar/SqlSubset.g4`
-
-```sql
-SELECT name, email FROM users WHERE age > 25
-INSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com')
-UPDATE users SET email = 'new@email.com' WHERE id = 1
-```
+Python, Java, JavaScript, TypeScript, Go, C#, C++, Swift, PHP, Dart
 
 ---
 
-## The AI-Assisted Workflow
+## What the AI Can Do
 
-### Traditional DSL Development
-
-```
-1. Read ANTLR4 docs for hours
-2. Write grammar, run antlr4 tool, get cryptic errors
-3. Fix errors, regenerate, write test harness
-4. Find ambiguity at runtime, debug for hours
-5. Repeat steps 2-4 many times
-6. Finally generate parser code
-7. Integrate into application
-```
-
-**Time: Days to weeks**
-
-### AI-Assisted Development
-
-```
-1. Describe your language to Claude
-2. Claude writes grammar → validates → parses samples → detects issues
-3. Iterate in conversation until parsing works correctly
-4. Claude generates parser code for your target language
-5. Integrate into application
-```
-
-**Time: Minutes to hours**
-
----
-
-## Available MCP Tools
-
-| Tool | What to Ask Claude |
-|------|-------------------|
-| `validate_grammar` | "Check if this grammar has any syntax errors" |
-| `parse_sample` | "Parse this input and show me the tree" |
-| `detect_ambiguity` | "Are there any parsing ambiguities in this grammar?" |
-| `analyze_left_recursion` | "Check for left recursion issues" |
-| `analyze_first_follow` | "Show me the FIRST/FOLLOW sets for debugging" |
-| `analyze_call_graph` | "What rules depend on what?" |
-| `visualize_atn` | "Generate a state diagram for this rule" |
-| `compile_grammar_multi_target` | "Generate a Python parser with visitor support" |
-| `profile_grammar` | "How does this grammar perform on large inputs?" |
+| Ask This | What Happens |
+|----------|--------------|
+| "Validate this grammar" | Checks for syntax errors |
+| "Parse this input" | Shows the parse tree |
+| "Check for ambiguities" | Finds parsing conflicts |
+| "Generate a Python parser" | Creates working code |
+| "Show the rule dependencies" | Visualizes grammar structure |
 
 ---
 
 ## Project Structure
 
 ```
-dsl-starter/
-├── grammar/                 # ANTLR4 grammar files
-│   ├── Hello.g4
-│   ├── Calculator.g4
-│   ├── RouteDsl.g4
-│   ├── ConfigDsl.g4
-│   ├── JsonSubset.g4
-│   └── SqlSubset.g4
-├── samples/                 # Test inputs for each grammar
-│   ├── hello.txt
-│   ├── calculator.txt
-│   ├── routes.dsl
-│   ├── config.ini
-│   ├── data.json
-│   └── queries.sql
-├── scripts/                 # Python MCP client demos
-│   ├── mcp_client.py        # Reusable MCP client library
-│   ├── mcp_route_dsl_demo.py
-│   └── ...
-├── configs/                 # MCP client configurations
-│   ├── claude-desktop.json
-│   └── cursor-mcp.json
-├── generated/               # Generated parser code (by demos)
-├── BLOG.md                  # Engineering story & deep dive
-└── EXAMPLES.md              # More examples & grammars-v4 reference
+grammar/          # ANTLR4 grammars (.g4 files)
+samples/          # Test inputs for each grammar
+scripts/          # Python demos
+configs/          # Claude/Cursor config files
+generated/        # Output from parser generation
 ```
 
 ---
 
-## Target Language Support
+## Learn More
 
-The MCP server can generate parsers for:
-
-| Language | Runtime Package |
-|----------|-----------------|
-| Python | `pip install antlr4-python3-runtime` |
-| Java | `org.antlr:antlr4-runtime:4.13.2` |
-| JavaScript | `npm install antlr4` |
-| TypeScript | `npm install antlr4` |
-| Go | `github.com/antlr4-go/antlr/v4` |
-| C# | `Antlr4.Runtime.Standard` |
-| C++ | bundled with ANTLR4 |
-| Swift | Swift Package Manager |
-| PHP | `composer require antlr/antlr4-runtime` |
-| Dart | `pub add antlr4` |
-
----
-
-## Common Patterns
-
-### Operator Precedence (Calculator Style)
-
-```antlr
-expr
-    : expr ('*'|'/') expr    // Higher precedence (listed first)
-    | expr ('+'|'-') expr    // Lower precedence
-    | NUMBER
-    | '(' expr ')'
-    ;
-```
-
-### Keyword vs Identifier
-
-```antlr
-// Keywords must come before generic identifier
-SELECT : 'SELECT' ;
-FROM   : 'FROM' ;
-WHERE  : 'WHERE' ;
-
-IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_]* ;
-```
-
-### Skipping Whitespace
-
-```antlr
-WS : [ \t\r\n]+ -> skip ;
-```
-
-### Comments
-
-```antlr
-COMMENT : '//' ~[\r\n]* -> skip ;
-BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
-```
-
----
-
-## Troubleshooting
-
-### "Grammar validation fails"
-
-- Ensure grammar name matches filename: `grammar Calculator;` in `Calculator.g4`
-- Lexer rules must be UPPERCASE, parser rules lowercase
-- All referenced rules must be defined
-
-### "Parser generated but doesn't work"
-
-- Install the correct runtime for your target language
-- Ensure lexer rules don't overlap unexpectedly (keywords before identifiers)
-- Check that whitespace is being skipped
-
-### "Ambiguity detected"
-
-- Use the `detect_ambiguity` tool to find the conflicting alternatives
-- Reorder alternatives or add more specific patterns
-- Consider using semantic predicates for context-sensitive parsing
-
----
-
-## Resources
-
-- **[BLOG.md](./BLOG.md)** — Deep dive: How AI transforms DSL development
-- **[EXAMPLES.md](./EXAMPLES.md)** — More examples and grammars-v4 reference
-- **[ANTLR4 MCP Server](../antlr4-mcp-server/)** — The MCP server powering this
+- **[BLOG.md](./BLOG.md)** — The full story of building a DSL with this approach
+- **[EXAMPLES.md](./EXAMPLES.md)** — Advanced patterns and more grammars
 - **[grammars-v4](../grammars-v4/)** — 600+ production grammars for reference
-- **[ANTLR4 Official Docs](https://www.antlr.org/)** — Complete language reference
 
 ---
 
 ## License
 
-Apache License 2.0
+Apache 2.0

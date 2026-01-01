@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Route DSL demo using ANTLR4 MCP server")
     p.add_argument("--server", choices=["docker", "jar"], default="docker",
                    help="Server mode: docker or jar")
-    p.add_argument("--image", default="sshailabh/antlr4-mcp-server:latest",
+    p.add_argument("--image", default="sshailabh1/antlr4-mcp-server:latest",
                    help="Docker image to run (for --server docker)")
     p.add_argument("--jar-path", default="",
                    help="Path to antlr4-mcp-server JAR (for --server jar)")

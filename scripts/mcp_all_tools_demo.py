@@ -26,7 +26,7 @@ from mcp_client import McpStdioClient
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Test all 9 ANTLR4 MCP Server tools")
     p.add_argument("--server", choices=["docker", "jar"], default="docker")
-    p.add_argument("--image", default="sshailabh/antlr4-mcp-server:latest")
+    p.add_argument("--image", default="sshailabh1/antlr4-mcp-server:latest")
     p.add_argument("--jar-path", default="")
     p.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
     p.add_argument("--verbose", "-v", action="store_true", help="Show full responses")

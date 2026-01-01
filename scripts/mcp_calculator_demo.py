@@ -21,7 +21,7 @@ from mcp_client import McpStdioClient
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Calculator DSL demo")
     p.add_argument("--server", choices=["docker", "jar"], default="docker")
-    p.add_argument("--image", default="sshailabh/antlr4-mcp-server:latest")
+    p.add_argument("--image", default="sshailabh1/antlr4-mcp-server:latest")
     p.add_argument("--jar-path", default="")
     p.add_argument("--out-dir", default="", help="Output directory for generated code")
     p.add_argument("--target", default="python", help="Target language (python, javascript, java, etc.)")

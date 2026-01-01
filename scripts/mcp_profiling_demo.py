@@ -22,7 +22,7 @@ from mcp_client import McpStdioClient
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Grammar Profiling Demo")
     p.add_argument("--server", choices=["docker", "jar"], default="docker")
-    p.add_argument("--image", default="sshailabh/antlr4-mcp-server:latest")
+    p.add_argument("--image", default="sshailabh1/antlr4-mcp-server:latest")
     p.add_argument("--jar-path", default="")
     p.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
     return p.parse_args()
