@@ -47,15 +47,12 @@ The magic: an MCP server gives the AI real parsing tools, so it validates instea
 docker pull sshailabh1/antlr4-mcp-server:latest
 ```
 
-### 2. Configure Your AI Client
+### 2. Configure MCP server in MCP Client(Claude Desktop/ChatGPT)
 
 <details>
 <summary><b>Claude Desktop</b></summary>
 
-Add to your config file:
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Linux**: `~/.config/claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Add to your config file: `claude_desktop_config.json`
 
 ```json
 {
@@ -68,52 +65,17 @@ Add to your config file:
 }
 ```
 
-Restart Claude Desktop after saving.
+Start Claude Desktop after saving.
 
 </details>
 
-<details>
-<summary><b>Cursor IDE</b></summary>
 
-Add to `.cursor/mcp.json` in your project:
-
-```json
-{
-  "mcpServers": {
-    "antlr4": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "sshailabh1/antlr4-mcp-server:latest"]
-    }
-  }
-}
-```
-
-Restart Cursor after saving.
-
-</details>
-
-<details>
-<summary><b>VS Code + Continue</b></summary>
-
-Add to your Continue configuration:
-
-```json
-{
-  "mcpServers": [
-    {
-      "name": "antlr4",
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "sshailabh1/antlr4-mcp-server:latest"]
-    }
-  ]
-}
-```
 
 </details>
 
 ### 3. Verify Setup
 
-Ask your AI assistant:
+Ask MCP CLient(AI assistant):
 
 > "List all available ANTLR4 tools"
 
@@ -195,25 +157,6 @@ Python, Java, JavaScript, TypeScript, Go, C#, C++, Swift, PHP, Dart
 | "Generate a Python parser" | Creates working code |
 | "Show the rule dependencies" | Visualizes grammar structure |
 
----
-
-## Project Structure
-
-```
-grammar/          # ANTLR4 grammars (.g4 files)
-samples/          # Test inputs for each grammar
-scripts/          # Python demos
-configs/          # Claude/Cursor config files
-generated/        # Output from parser generation
-```
-
----
-
-## Learn More
-
-- **[BLOG.md](./BLOG.md)** — The full story of building a DSL with this approach
-- **[EXAMPLES.md](./EXAMPLES.md)** — Advanced patterns and more grammars
-- **[grammars-v4](../grammars-v4/)** — 600+ production grammars for reference
 
 ---
 
